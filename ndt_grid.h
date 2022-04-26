@@ -117,18 +117,20 @@ struct GridCell
 	typename DataType::value_type probablity_;
 };
 
+template<typename T>
+using GridCellType = GridCell<Eigen::Matrix<T, 2, 1>>;
 
-template<typename GridType>
+template<typename T, template<template U> class GridType = GridCellType>
 class NdtGrid
 {
-	using PointType = typename GridType::type;
-	using DataType = typename GridType::value_type;
-	using PoseType = typename Eigen::Matrix<DataType, 3, 1>;
-	using CovarinceType = typename GridType::covarince_type;
-
 public:
-	NdtGrid(  );
-	~NdtGrid();
+	using PointType = typename GridType<T>::type;
+	using DataType = typename GridType<T>::value_type;
+	using PoseType = typename Eigen::Matrix<DataType, 3, 1>;
+	using CovarinceType = typename GridType<T>::covarince_type;
+
+	NdtGrid() {  }
+	~NdtGrid() {  } 
 
 	bool ndt_process( const slam::ScanContainer &first_scan,
 			  const slam::ScanContainer &second_scan,
@@ -265,7 +267,7 @@ private:
 
 private:
 
-	std::vector<GridType> grid = std::vector<GridType>( COLUMNS * ROWS, GridType());
+	std::vector<GridType<T>> grid = std::vector<GridType<T>>( COLUMNS * ROWS, GridType());
 	
 	Eigen::Matrix<DataType, 3, 3> H;
         Eigen::Matrix<DataType, 3, 1> b;
