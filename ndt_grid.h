@@ -108,8 +108,8 @@ struct GridCell
 		
 	}
 	
-	DataType mean_ = 0;
-	covarince_type covarince_ = 0;
+	DataType mean_ = DataType::Zero();
+	covarince_type covarince_ = DataType::Zero();
 	int number_ = 0;
 	
 	std::vector<DataType> points;
@@ -225,18 +225,18 @@ private:
 
 		if( point[1] >= 0 ){
 			if( point[0] >= 0 ){
-				return ( HALF_ROWS - y ) * 10 + ( x + HALF_COLUMNS - 1 );
+				return ( HALF_ROWS - y ) * COLUMNS + ( x + HALF_COLUMNS - 1 );
 			}
 			else {
-				return ( HALF_ROWS - y ) * 10 + ( 0 - x - 1 );
+				return ( HALF_ROWS - y ) * COLUMNS + ( 0 - x - 1 );
 			}
 		}
 		else {
 			if( point[0] >= 0 ){
-				return ( HALF_ROWS - y - 1 ) * 10 + ( x + HALF_COLUMNS - 1 );
+				return ( HALF_ROWS - y - 1 ) * COLUMNS + ( x + HALF_COLUMNS - 1 );
 			}
 			else {
-				return ( HALF_ROWS - y - 1 ) * 10 + ( 0 - x - 1 );
+				return ( HALF_ROWS - y - 1 ) * COLUMNS + ( 0 - x - 1 );
 			}
 		}
 	}
