@@ -9,16 +9,7 @@ namespace sensor{
 
 template<int Size>
 struct LidarScan{
-	LidarScan() : angle_min(3.12414),
-			angle_max(3.14159),
-			angle_increment(0.0174532924),
-			time_increment(0.0004022129),
-			range_min(0.1500000060),
-			range_max(12.0000000000)		
-	{
-		memset( this->ranges, 0, Size );
-		memset( this->intensities, 0, Size );
-	}
+	LidarScan(){}
 
 	~LidarScan(){}
 
@@ -78,89 +69,20 @@ struct LidarScan{
 		return Size;
 	}
 	
-	float angle_min;
-        float angle_max;
-        float angle_increment;
-        float scan_time;
-        float time_increment;
-        float range_min;
-        float range_max;
-        float ranges[Size];
-        float intensities[Size];
+	float angle_min = -3.12414;
+        float angle_max = 3.14159;
+        float angle_increment = 0.0174532924;
+        float scan_time = 0;
+        float time_increment = 0.0004022129;
+        float range_min = 0.1500000060;
+        float range_max = 12.0;
+        float ranges[Size] = { 0 };
+        float intensities[Size] = { 0 };
 	
 };
 
 typedef struct LidarScan<1440> LaserScan;
 
-struct IMU
-{
-	IMU() : ax( 0.0f ),
-		ay( 0.0f ),
-		az( 0.0f ),
-		gx( 0.0f ),
-		gy( 0.0f ),
-		gz( 0.0f )
-	{
-
-	}	
-
-	IMU( 	float ax_, 
-		float ay_, 
-		float az_, 
-		float gx_, 
-		float gy_, 
-		float gz_ ) : ax( ax_ ),
-			     ay( ay_ ),
-			     az( az_ ),
-			     gx( gx_ ),
-			     gy( gy_ ),
-			     gz( gz_ )
-	{
-
-	}
-	
-	IMU( const IMU &rhs ) : ax( rhs.ax ),
-				ay( rhs.ay ),
-				az( rhs.az ),
-				gx( rhs.gx ),
-				gy( rhs.gy ),
-				gz( rhs.gz )
-	{
-
-	}
-
-	const IMU& operator=( const IMU &rhs )
-	{
-		if( &rhs == this ){
-			return *this;
-		}
-
-		ax = rhs.ax;
-		ay = rhs.ay;
-		az = rhs.az;
-		gx = rhs.gx;
-		gy = rhs.gy;
-		gz = rhs.gz;
-
-		return *this;
-	}	
-
-	~IMU()
-	{
-
-	}	
-
-	float ax;// x 方向加速度
-	float ay;// y 方向加速度
-	float az;// z 方向加速度
-	float gx;// x 方角速度
-	float gy;// y 方角速度
-	float gz;// z 方角速度
-};
-
-typedef struct IMU IMU;
-
-}
 
 }
 
