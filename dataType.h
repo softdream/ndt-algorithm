@@ -83,6 +83,7 @@ struct LidarScan{
 
 typedef struct LidarScan<1440> LaserScan;
 
+}
 
 }
 

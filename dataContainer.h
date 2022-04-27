@@ -23,13 +23,14 @@ public:
 	template<typename LaserData>
 	void pointTransform2LaserCoords( const LaserData &scan );	
 	
-	int getSize() const;
+	const int getSize() const;
 
 	void displayAFrameScan( const float scale = 10.0f ) const;
 	
 	template<typename Rotation, typename Translation>
 	void pointCoordinateTransformation( const Rotation &R, const Translation &T );
 
+	bool isEmpty() const;
 private:
 	std::vector<DataType> dataVec;
 	
@@ -48,11 +49,16 @@ DataContainer<DataType>::~DataContainer()
 }
 
 template<typename DataType>
-int DataContainer<DataType>::getSize() const
+const int DataContainer<DataType>::getSize() const
 {
 	return dataVec.size();
 }
 
+template<typename DataType>
+bool DataContainer<DataType>::isEmpty() const
+{
+	return dataVec.empty();
+}
 
 template<typename DataType>
 void DataContainer<DataType>::addData( const DataType &data )
@@ -112,6 +118,7 @@ void DataContainer<DataType>::displayAFrameScan( const float scale ) const
 	} 
 
 	cv::imshow( "scan", image );
+	cv::waitKey(0);
 }
 
 template<typename DataType>

@@ -9,11 +9,11 @@
 #include "scanContainer.h"
 
 
-#define LASER_DIST 15.0
-#define ROWS 30
-#define COLUMNS 30
-#define HALF_ROWS ROWS / 2
-#define HALF_COLUMNS COLUMNS / 2
+#define LASER_DIST 14.0
+#define ROWS 28
+#define COLUMNS 28
+#define HALF_ROWS 14
+#define HALF_COLUMNS 14
 
 
 namespace ndt{
@@ -73,13 +73,13 @@ static constexpr T laser_max_dist()
 template<typename T, typename = typename std::enable_if<is_double_or_float<T>::value>::type>
 static constexpr T get_row_range()
 {
-	return laser_max_dist<T>() / ROWS;
+	return laser_max_dist<T>() / HALF_ROWS;
 }
 
 template<typename T, typename = typename std::enable_if<is_double_or_float<T>::value>::type>
 static constexpr T get_column_range()
 {
-	return laser_max_dist<T>() / COLUMNS;
+	return laser_max_dist<T>() / HALF_COLUMNS;
 }
 
 template<typename T, typename = typename std::enable_if<is_double_or_float<T>::value>::type>
@@ -102,25 +102,35 @@ struct GridCell
 	using type = DataType;
 	using value_type = typename DataType::value_type;
 	using covarince_type = typename Eigen::Matrix<value_type, 2, 2>;
+	
+	GridCell()
+	{
+
+	}
+	
+	~GridCell()
+	{
+
+	}
 
 	GridCell( const DataType &mean, const DataType &covarince, const int number ) : mean_( mean ), covarince_( covarince ), number_( number )
 	{
 		
 	}
 	
-	DataType mean_ = DataType::Zero();
-	covarince_type covarince_ = DataType::Zero();
+	DataType mean_ = DataType::Zero();;
+	covarince_type covarince_ = covarince_type::Zero();
 	int number_ = 0;
 	
 	std::vector<DataType> points;
 
-	typename DataType::value_type probablity_;
+	typename DataType::value_type probablity_ = 0; 
 };
 
 template<typename T>
 using GridCellType = GridCell<Eigen::Matrix<T, 2, 1>>;
 
-template<typename T, template<template U> class GridType = GridCellType>
+template<typename T, template<typename U> class GridType = GridCellType>
 class NdtGrid
 {
 public:
@@ -137,7 +147,7 @@ public:
 			  PoseType &p,
 			  const int max_iterations = 10 )
 	{
-		if( first_scan.empty() || second_scan.empty() ){
+		if( first_scan.isEmpty() || second_scan.isEmpty() ){
 			return false;
 		}	
 
@@ -154,30 +164,41 @@ public:
 		return true;
 	}	
 
-private:
+//private:
 	void caculateNDTByFirstScan( const slam::ScanContainer &scan )
 	{
 		for( size_t i = 0; i < scan.getSize(); i ++ ){
+			//std::cout<<"--------------"<<std::endl;
 			PointType point = scan.getIndexData( i );
 			int index = pointMapToGrid( point );
-			
+			//std::cout<<"point "<<i<<": "<<std::endl<<point<<std::endl;
+			//std::cout<<"index : "<<index<<std::endl;	
 			grid[index].number_ ++;
-			grid[index].mean_ ++;
+			grid[index].mean_ += point;
 			grid[index].points.push_back( point );
 		}	
 
-		for( auto it : grid ){
-			if( it.number >= 3 ){
-				DataType average = it.mean_ / static_cast<DataType>( it.number );
-				it.mean_ = average;
-				for( auto item : it.points ){
-					CovarinceType sigma = ( item - it.mean_ ) * ( item - it.mean_ ).transpose();
-					it.covarince_ += sigma;
+		for( size_t i = 0; i < grid.size(); i ++ ){
+			if( grid[i].number_ >= 3 ){
+				PointType average = grid[i].mean_ / static_cast<DataType>( grid[i].number_ );
+				grid[i].mean_ = average;
+				for( auto item : grid[i].points ){
+					CovarinceType sigma = ( item - grid[i].mean_ ) * ( item - grid[i].mean_ ).transpose();
+					grid[i].covarince_ += sigma;
 				}
 				
-				it.covarince_ /= static_cast<DataType>( it.number );
+				grid[i].covarince_ /= static_cast<DataType>( grid[i].number_  - 1 );
+				//std::cout<<"covarince : "<<std::endl<<it.covarince_<<std::endl;
 			}
+			else {
+				//grid[i].mean_ = PointType( 0, 0 );	
+				CovarinceType cov;
+				cov << 65536, 65536, 65536, 65536;
+				grid[i].covarince_ = cov;
+			}
+			//std::cout<<"covarince : "<<it.number_<<", i : "<<i<<std::endl<<it.covarince_<<std::endl;
 		}
+		
 	}
 
 	void getHessianDerived( const slam::ScanContainer &scan, 
@@ -194,17 +215,29 @@ private:
 			PointType point_in_first_frame = pointCoordinateTransform( point, p );                
 			
 		        int index = pointMapToGrid( point_in_first_frame );
-				
+			//std::cout<<"index : "<<index<<std::endl;				
+
 			PointType e = point_in_first_frame - grid[index].mean_;
 			CovarinceType sigma_inverse = ( grid[index].covarince_ ).inverse();
+			//std::cout<<"e : "<<std::endl<<e<<std::endl;
+			//std::cout<<"sigma inverse : "<<std::endl<<sigma_inverse<<std::endl;		
 
+			DataType tmp1 = -point[0] * ::sin( p[2] ) - point[1] * ::cos( p[2] );
+			DataType tmp2 =  point[0] * ::cos( p[2] ) - point[1] * ::sin( p[2] );
 			Eigen::Matrix<DataType, 2, 3> Jacobian;
-			Jacobian << 1, 0, -point_in_first_frame[0] * ::sin( point_in_first_frame[2] ) - point_in_first_frame[1] * ::cos( point_in_first_frame[2] ),
-				    0, 1,  point_in_first_frame[0] * ::cos( point_in_first_frame[2] ) - point_in_first_frame[1] * ::sin( point_in_first_frame[2] );
+			Jacobian << 1, 0,  tmp1,
+				    0, 1,  tmp2;
+
+			std::cout<<"Jacobian : "<<std::endl<<Jacobian<<std::endl;
+			//std::cout<<"b = "<<std::endl<<( e.transpose() * sigma_inverse * Jacobian ).transpose();
 
 			b += ( e.transpose() * sigma_inverse * Jacobian ).transpose();
 			H += Jacobian.transpose() * sigma_inverse * Jacobian;			
+			//std::cout<<"b : "<<std::endl<<b<<std::endl;
 		}
+		
+		std::cout<<"b : "<<std::endl<<b<<std::endl;
+                std::cout<<"H : "<<std::endl<<H<<std::endl;
 	}	
 
 	void estimateTransformationOnce( const slam::ScanContainer &scan,
@@ -220,23 +253,23 @@ private:
 private:	
 	const int pointMapToGrid( const PointType &point ) const
 	{
-		DataType x = point[0] / get_column_range<DataType>();
-		DataType y = point[1] / get_row_range<DataType>();
-
+		int x = ( point[0] / get_column_range<DataType>() );
+		int y = ( point[1] / get_row_range<DataType>() );
+	
 		if( point[1] >= 0 ){
 			if( point[0] >= 0 ){
-				return ( HALF_ROWS - y ) * COLUMNS + ( x + HALF_COLUMNS - 1 );
+				return ( HALF_ROWS - y - 1 ) * COLUMNS + ( x + HALF_COLUMNS + 1 );
 			}
 			else {
-				return ( HALF_ROWS - y ) * COLUMNS + ( 0 - x - 1 );
+				return ( HALF_ROWS - y - 1 ) * COLUMNS + ( x + HALF_COLUMNS );
 			}
 		}
 		else {
 			if( point[0] >= 0 ){
-				return ( HALF_ROWS - y - 1 ) * COLUMNS + ( x + HALF_COLUMNS - 1 );
+				return ( HALF_ROWS - y ) * COLUMNS + ( HALF_COLUMNS + x ) + 1;
 			}
 			else {
-				return ( HALF_ROWS - y - 1 ) * COLUMNS + ( 0 - x - 1 );
+				return ( HALF_ROWS - y ) * COLUMNS + ( HALF_COLUMNS + x );
 			}
 		}
 	}
@@ -262,17 +295,23 @@ private:
 		rotate << ::cos( delta[2] ), -::sin( delta[2] ), 
 			  ::sin( delta[2] ),  ::cos( delta[2] );
 	
-		return rotate * point_old + delta.head<2>();
+		Eigen::Matrix<DataType, 2, 1> trans( delta[0], delta[1] );
+		return rotate * point_old + trans;
 	}
 
-private:
+//private:
 
-	std::vector<GridType<T>> grid = std::vector<GridType<T>>( COLUMNS * ROWS, GridType());
+public:
+	std::vector<GridType<T>> grid = std::vector<GridType<T>>( COLUMNS * ROWS + 1 );
 	
 	Eigen::Matrix<DataType, 3, 3> H;
         Eigen::Matrix<DataType, 3, 1> b;
 };
 
+using NDT = NdtGrid<float>;
+
 }
 
 #endif
+
+
