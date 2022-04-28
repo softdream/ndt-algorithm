@@ -8,7 +8,7 @@ dependencies:
 ``` shell
 Eigen3
 Opencv3.4.1 ( Alternative )
-``
+```
 build:
 ``` shell
 mkdir build
