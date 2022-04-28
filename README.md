@@ -19,7 +19,7 @@ make
 in directory: build/bin/ </br>
 execuate the command:
 ``` shell
-./ndt_test
+./ndt_test or ./ndt_laser_odometry
 ```
 ## Test Result
  ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/test.gif)
