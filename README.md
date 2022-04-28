@@ -16,14 +16,13 @@ cd build
 cmake ..
 make
 ```
-use:
-in directory: build/bin/
+in directory: build/bin/ </br>
 execuate the command:
 ``` shell
 ./ndt_test
 ```
 ## Test Result
-
+ ![Test Result]()<br>
 ## Reference
 [1] Peter Biber, Wolfgang Straaer. The Normal Distributions Transform: A New Approach to Laser Scan 
 Matching.
