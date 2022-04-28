@@ -23,6 +23,7 @@ execuate the command:
 ```
 ## Test Result
  ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/test.gif)
+ ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/odometry.gif)
 ## Reference
 [1] Peter Biber, Wolfgang Straaer. The Normal Distributions Transform: A New Approach to Laser Scan 
 Matching.
