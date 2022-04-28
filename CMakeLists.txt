@@ -17,15 +17,26 @@ FIND_PACKAGE( OpenCV REQUIRED )
 INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
 
 AUX_SOURCE_DIRECTORY( ${PROJECT_SOURCE_DIR}/src src_file )
-AUX_SOURCE_DIRECTORY( ${PROJECT_SOURCE_DIR} src_file )
+#AUX_SOURCE_DIRECTORY( ${PROJECT_SOURCE_DIR} src_file )
 
 INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/include" )
 
 #directory of opencv link libs
 LINK_DIRECTORIES(${OpenCV_LIBRARY_DIRS})
 
+# 找到所有含有mian函数的cpp文件，保存在mians里
+file(
+    GLOB_RECURSE mains RELATIVE "${PROJECT_SOURCE_DIR}"
+    "${PROJECT_SOURCE_DIR}/ndt_test.cpp"
+    "${PROJECT_SOURCE_DIR}/ndt_laser_odometry.cpp"
+)
 
+# 循环遍历每个含main的文件，分别编译生成exe文件
+foreach(mainfile IN LISTS mains)
+    # Get file name without directory
+    get_filename_component(mainname ${mainfile} NAME_WE)
+    add_executable(${mainname} ${mainfile} ${src_file})
+    # 添加库文件目录
+    target_link_libraries(${mainname} ${OpenCV_LIBS})# 链接库文件
+endforeach()
 
-ADD_EXECUTABLE( ndt_test ${src_file} )
-
-TARGET_LINK_LIBRARIES( ndt_test ${OpenCV_LIBS} )

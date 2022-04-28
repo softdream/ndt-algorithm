@@ -6,6 +6,8 @@
 #include <Eigen/Dense>
 #include <type_traits>
 
+#include <limits>
+
 #include "scanContainer.h"
 
 #define WINDOW_WIDTH 1200
@@ -147,7 +149,7 @@ public:
 	bool ndtProcess( const slam::ScanContainer &first_scan,
 			  const slam::ScanContainer &second_scan,
 			  PoseType &p,
-			  const int max_iterations = 10 )
+			  const int max_iterations = 5 )
 	{
 		if( first_scan.isEmpty() || second_scan.isEmpty() ){
 			return false;
@@ -158,13 +160,13 @@ public:
 		int iteration = 0;
 		for( ; iteration < max_iterations; iteration ++ ){
 			
-			showTwoScanFrame( first_scan, second_scan, p );	
+			//showTwoScanFrame( first_scan, second_scan, p );	
 			
 			estimateTransformationOnce( second_scan, p );
 		}
 		
 		angleNormalize( p[2] );
-		std::cout<<"estimated p = "<<std::endl<<p<<std::endl;		
+		//std::cout<<"estimated p = "<<std::endl<<p<<std::endl;		
 
 		return true;
 	}	
@@ -172,6 +174,8 @@ public:
 private:
 	void caculateNDTByFirstScan( const slam::ScanContainer &scan )
 	{
+		memset( grid.data(), 0, grid.size() * sizeof( grid[0] ) );		
+
 		for( size_t i = 0; i < scan.getSize(); i ++ ){
 			//std::cout<<"--------------"<<std::endl;
 			PointType point = scan.getIndexData( i );
@@ -198,7 +202,7 @@ private:
 			else {
 				//grid[i].mean_ = PointType( 0, 0 );	
 				CovarinceType cov;
-				cov << 65536, 0, 0, 65536;
+				cov << std::numeric_limits<DataType>::max(), 0, 0, std::numeric_limits<DataType>::max();
 				grid[i].covarince_ = cov;
 			}
 			//std::cout<<"covarince : "<<it.number_<<", i : "<<i<<std::endl<<it.covarince_<<std::endl;
