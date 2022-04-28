@@ -8,6 +8,8 @@
 
 #include "scanContainer.h"
 
+#define WINDOW_WIDTH 1200
+#define WINDOW_HEIGHT 1200
 
 #define LASER_DIST 14.0
 #define ROWS 28
@@ -142,7 +144,7 @@ public:
 	NdtGrid() {  }
 	~NdtGrid() {  } 
 
-	bool ndt_process( const slam::ScanContainer &first_scan,
+	bool ndtProcess( const slam::ScanContainer &first_scan,
 			  const slam::ScanContainer &second_scan,
 			  PoseType &p,
 			  const int max_iterations = 10 )
@@ -155,6 +157,9 @@ public:
 		
 		int iteration = 0;
 		for( ; iteration < max_iterations; iteration ++ ){
+			
+			showTwoScanFrame( first_scan, second_scan, p );	
+			
 			estimateTransformationOnce( second_scan, p );
 		}
 		
@@ -164,7 +169,7 @@ public:
 		return true;
 	}	
 
-//private:
+private:
 	void caculateNDTByFirstScan( const slam::ScanContainer &scan )
 	{
 		for( size_t i = 0; i < scan.getSize(); i ++ ){
@@ -193,7 +198,7 @@ public:
 			else {
 				//grid[i].mean_ = PointType( 0, 0 );	
 				CovarinceType cov;
-				cov << 65536, 65536, 65536, 65536;
+				cov << 65536, 0, 0, 65536;
 				grid[i].covarince_ = cov;
 			}
 			//std::cout<<"covarince : "<<it.number_<<", i : "<<i<<std::endl<<it.covarince_<<std::endl;
@@ -219,7 +224,8 @@ public:
 
 			PointType e = point_in_first_frame - grid[index].mean_;
 			CovarinceType sigma_inverse = ( grid[index].covarince_ ).inverse();
-			//std::cout<<"e : "<<std::endl<<e<<std::endl;
+			//std::cout<<"--------------------------"<<std::endl;
+			//std::cout<<"e : "<<std::endl<<e.transpose()<<std::endl;
 			//std::cout<<"sigma inverse : "<<std::endl<<sigma_inverse<<std::endl;		
 
 			DataType tmp1 = -point[0] * ::sin( p[2] ) - point[1] * ::cos( p[2] );
@@ -228,7 +234,7 @@ public:
 			Jacobian << 1, 0,  tmp1,
 				    0, 1,  tmp2;
 
-			std::cout<<"Jacobian : "<<std::endl<<Jacobian<<std::endl;
+			//std::cout<<"Jacobian : "<<std::endl<<Jacobian<<std::endl;
 			//std::cout<<"b = "<<std::endl<<( e.transpose() * sigma_inverse * Jacobian ).transpose();
 
 			b += ( e.transpose() * sigma_inverse * Jacobian ).transpose();
@@ -299,9 +305,39 @@ private:
 		return rotate * point_old + trans;
 	}
 
-//private:
+	void showTwoScanFrame( const slam::ScanContainer &container1, const slam::ScanContainer &container2, const PoseType &delta, const float scale = 20 ) const
+	{
+		cv::Mat image = cv::Mat::zeros( WINDOW_WIDTH, WINDOW_HEIGHT, CV_8UC3 );
 
-public:
+	        cv::Point2d center( WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 );
+        	cv::circle(image, center, 1, cv::Scalar(0, 255, 0), 1);
+	        cv::line( image, cv::Point( WINDOW_WIDTH / 2, 0 ), cv::Point( WINDOW_WIDTH / 2, WINDOW_HEIGHT ), cv::Scalar( 67, 128, 94 ), 1 );
+        	cv::line( image, cv::Point( 0, WINDOW_HEIGHT / 2 ), cv::Point( WINDOW_WIDTH, WINDOW_HEIGHT / 2 ), cv::Scalar( 67, 128, 94 ), 1 );
+
+	        for( int i = 0; i < container1.getSize(); i ++ ){
+        	        cv::Point2d point( container1.getIndexData(i)[0] * scale + WINDOW_WIDTH / 2, container1.getIndexData(i)[1] * scale + WINDOW_HEIGHT / 2 );
+                	cv::circle(image, point, 1, cv::Scalar(0, 0, 255), -1);
+        	}
+			
+		for( int i = 0; i < container2.getSize(); i ++ ){
+                	Eigen::Matrix<float, 2, 2> rotate;
+                	rotate << ::cos( delta[2] ), -::sin( delta[2] ),
+                          	  ::sin( delta[2] ),  ::cos( delta[2] );
+                	Eigen::Matrix<float, 2, 1> trans( delta[0], delta[1] );
+
+                	Eigen::Vector2f point_old( container2.getIndexData(i)[0], container2.getIndexData(i)[1] );
+                	Eigen::Vector2f point_new = rotate * point_old + trans;
+
+                	cv::Point2d point( point_new[0] * scale + WINDOW_WIDTH / 2, point_new[1] * scale + WINDOW_HEIGHT / 2 );
+                	cv::circle(image, point, 1, cv::Scalar(0, 255, 0), -1);
+        	}
+
+        	cv::imshow( "scan", image );
+        	cv::waitKey(0);
+	}
+
+private:
+
 	std::vector<GridType<T>> grid = std::vector<GridType<T>>( COLUMNS * ROWS + 1 );
 	
 	Eigen::Matrix<DataType, 3, 3> H;
