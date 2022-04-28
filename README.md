@@ -1,5 +1,5 @@
 ## The 2D Normal Distributions Transform( NDT ) Scan Match Method
-This repo implemented a 2d NDT algorithm by c++ language **without the pcl libray**. </br>
+This repo implemented a 2d NDT algorithm by c++ language **without the pcl library**. </br>
 The only dependencies the code needs are Eigen and Opencv(alternative, only for displaying the scan points).</br>
 NDT is a more efficient and less computational scanning matching method compared with ICP. Can be used for 2D laser odometer or SLAM front-end directly.
 
@@ -22,7 +22,7 @@ execuate the command:
 ./ndt_test
 ```
 ## Test Result
- ![Test Result]()<br>
+ ![Test Result](https://github.com/softdream/ndt-algorithm/tree/master/test_images/test.gif)<br>
 ## Reference
 [1] Peter Biber, Wolfgang Straaer. The Normal Distributions Transform: A New Approach to Laser Scan 
 Matching.
