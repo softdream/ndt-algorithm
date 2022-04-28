@@ -22,7 +22,7 @@ execuate the command:
 ./ndt_test
 ```
 ## Test Result
- ![Test Result](https://github.com/softdream/ndt-algorithm/tree/master/test_images/test.gif)<br>
+ ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/test.gif)
 ## Reference
 [1] Peter Biber, Wolfgang Straaer. The Normal Distributions Transform: A New Approach to Laser Scan 
 Matching.
