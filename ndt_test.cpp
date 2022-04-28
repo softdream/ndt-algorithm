@@ -30,8 +30,8 @@ int main()
 	ndt::NDT ndt;
 
 	slam::simulation::Simulation simulation1, simulation2;
-        simulation1.openSimulationFile( "frame1.txt" );
-	simulation2.openSimulationFile( "frame2.txt" );
+        simulation1.openSimulationFile( "../../test_data/frame1.txt" );
+	simulation2.openSimulationFile( "../../test_data/frame2.txt" );
 
 	slam::sensor::LaserScan scan1, scan2;
 
