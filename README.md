@@ -27,3 +27,6 @@ execuate the command:
 ## Reference
 [1] Peter Biber, Wolfgang Straaer. The Normal Distributions Transform: A New Approach to Laser Scan 
 Matching.
+
+## Extral
+This algorithm is also ported to embedded devices. I tested it on ESP32, and the result shows that the algorithm performs well on embedded devices.For more details, please refere to this repo: https://github.com/softdream/NDT_Laser_Odometer_ESP32
