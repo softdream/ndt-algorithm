@@ -22,7 +22,9 @@ execuate the command:
 ./ndt_test or ./ndt_laser_odometry
 ```
 ## Test Result
+match between two scans:
  ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/test.gif)
+ laser odometer：
  ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/odometry.gif)
 ## Reference
 [1] Peter Biber, Wolfgang Straaer. The Normal Distributions Transform: A New Approach to Laser Scan 
