@@ -22,7 +22,7 @@ execuate the command:
 ./ndt_test or ./ndt_laser_odometry
 ```
 ## Test Result
-match between two scans:</br>
+matching between two scans:</br>
  ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/test.gif) </br>
  laser odometer test：</br>
  ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/odometry.gif)
