@@ -31,4 +31,4 @@ match between two scans:</br>
 Matching.
 
 ## Extral
-This algorithm is also ported to embedded devices. I tested it on ESP32, and the result shows that the algorithm performs well.For more details, please refere to this repo: https://github.com/softdream/NDT_Laser_Odometer_ESP32
+This algorithm is also ported to embedded devices. I tested it on ESP32, and the result shows that the algorithm performs well.For more details, please refer to this repo: https://github.com/softdream/NDT_Laser_Odometer_ESP32
