@@ -24,7 +24,7 @@ INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/include" )
 #directory of opencv link libs
 LINK_DIRECTORIES(${OpenCV_LIBRARY_DIRS})
 
-# 找到所有含有mian函数的cpp文件，保存在mians里
+# 找到所有含有mian函数的cpp文件，保存在mains里
 file(
     GLOB_RECURSE mains RELATIVE "${PROJECT_SOURCE_DIR}"
     "${PROJECT_SOURCE_DIR}/ndt_test.cpp"
