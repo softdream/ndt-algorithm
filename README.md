@@ -23,7 +23,7 @@ execuate the command:
 ```
 ## Test Result
 match between two scans:</br>
- ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/test.gif)
+ ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/test.gif) </br>
  laser odometer：</br>
  ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/odometry.gif)
 ## Reference
