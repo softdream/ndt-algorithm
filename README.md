@@ -24,6 +24,7 @@ execuate the command:
 ## Test Result
 matching between two scans:</br>
  ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/test.gif) </br>
+ ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/test2.gif) </br>
  laser odometer test：</br>
  ![img](https://github.com/softdream/ndt-algorithm/blob/master/test_images/odometry.gif)
 ## Reference
